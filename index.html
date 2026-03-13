@@ -6,163 +6,85 @@
 <title>通知车主挪车</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: Arial, sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    background: #f0f2f5;
-    color: #333;
-  }
-  .container {
-    text-align: center;
-    padding: 30px 20px;
-    width: 100%;
-    max-width: 400px;
-    border-radius: 12px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-    background: #fff;
-    margin: 20px;
-  }
-  h1 { font-size: 24px; margin-bottom: 12px; color: #007bff; }
-  .subtitle { margin-bottom: 20px; font-size: 15px; color: #555; }
-  .instruction {
-    margin-bottom: 24px;
-    font-size: 13px;
-    color: #777;
-    line-height: 1.8;
-    text-align: left;
-    background: #f8f9fa;
-    padding: 12px 16px;
-    border-radius: 8px;
-  }
-  .instruction ol { padding-left: 18px; }
-  button {
-    width: 100%;
-    padding: 15px;
-    margin: 8px 0;
-    font-size: 18px;
-    font-weight: bold;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
-    letter-spacing: 1px;
-  }
-  button:active { transform: scale(0.98); }
+  body { font-family: Arial, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; background: #f0f2f5; color: #333; }
+  .container { text-align: center; padding: 20px; width: 100%; max-width: 400px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); background: #fff; }
+  h1 { font-size: 24px; margin-bottom: 20px; color: #007bff; }
+  p { margin-bottom: 20px; font-size: 16px; color: #555; }
+  .instruction { margin-bottom: 30px; font-size: 14px; color: #666; line-height: 1.6; }
+  button { width: 100%; padding: 15px; margin: 10px 0; font-size: 18px; font-weight: bold; color: #fff; border: none; border-radius: 6px; cursor: pointer; transition: background 0.3s; }
   .notify-btn { background: #28a745; }
   .notify-btn:hover { background: #218838; }
-  .notify-btn:disabled { background: #94d3a2; cursor: not-allowed; }
   .call-btn { background: #17a2b8; }
   .call-btn:hover { background: #138496; }
-  .status-message {
-    margin-top: 16px;
-    font-size: 14px;
-    color: #666;
-    padding: 10px 14px;
-    border-radius: 6px;
-    background-color: #f8f9fa;
-    min-height: 40px;
-    line-height: 1.5;
-  }
-  .footer {
-    margin-top: 24px;
-    font-size: 12px;
-    color: #aaa;
-  }
+  .footer { margin-top: 30px; font-size: 12px; color: #888; }
+  .status-message { margin-top: 20px; font-size: 14px; color: #666; padding: 10px; border-radius: 4px; background-color: #f8f9fa; }
 </style>
 </head>
 <body>
 <div class="container">
-  <h1>🚗 通知车主挪车</h1>
-  <p class="subtitle">如需通知车主，请点击以下按钮</p>
-
+  <h1>通知车主挪车</h1>
+  <p>如需通知车主，请点击以下按钮</p>
   <div class="instruction">
     <strong>使用说明：</strong>
     <ol>
-      <li>点击"通知车主挪车"，通过微信向车主发送挪车提醒</li>
-      <li>点击"拨打车主电话"，直接拨打车主电话</li>
+      <li>"通知车主挪车"按钮：通过微信公众号向车主发送挪车提醒</li>
+      <li>"拨打车主电话"按钮：直接拨打车主电话（需要手机设备支持）</li>
     </ol>
   </div>
-
-  <button class="notify-btn" id="notifyBtn" onclick="notifyOwner()">📩 通知车主挪车</button>
-  <button class="call-btn" onclick="callOwner()">📞 拨打车主电话</button>
-
+  <button class="notify-btn" onclick="notifyOwner()">通知车主挪车</button>
+  <button class="call-btn" onclick="callOwner()">拨打车主电话</button>
   <div id="status" class="status-message"></div>
-
   <div class="footer">
-    <p>挪车通知服务 | Wxpusher 微信推送</p>
+    <p>挪车通知服务 | 使用 Wxpusher 微信公众号推送</p>
   </div>
 </div>
-
 <script>
 const phone = "19938590219";
 const wxpusherAppToken = "AT_8MRwLv9go0kCWwfshfmTerzpne8Rh429";
 const wxpusherUIDs = ["UID_z0KZ5oS4jVyDmODm7vhp8iIJfgtU"];
-
 let isSending = false;
 
-function setStatus(html) {
-  document.getElementById('status').innerHTML = html;
-}
-
 function notifyOwner() {
-  if (isSending) {
-    setStatus('<span style="color:#f0ad4e">⏳ 正在发送，请稍候...</span>');
-    return;
-  }
-
+  if (isSending) { alert("正在发送通知，请稍候..."); return; }
   isSending = true;
-  const btn = document.getElementById('notifyBtn');
-  btn.disabled = true;
-  setStatus('<span style="color:#17a2b8">⏳ 正在发送通知...</span>');
-
+  document.getElementById('status').innerHTML = '<span style="color:#28a745">正在发送通知...</span>';
   fetch("https://wxpusher.zjiecode.com/api/send/message", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      appToken: wxpusherAppToken,
-      content: "您好，有人需要您挪车，请及时处理。",
-      contentType: 1,
-      uids: wxpusherUIDs
-    })
+    body: JSON.stringify({ appToken: wxpusherAppToken, content: "您好，有人需要您挪车，请及时处理。", contentType: 1, uids: wxpusherUIDs })
   })
-  .then(res => res.json())
+  .then(r => r.json())
   .then(data => {
     isSending = false;
-    btn.disabled = false;
     if (data.code === 1000) {
-      setStatus('<span style="color:#28a745">✅ 通知已成功发送！车主将很快收到微信消息。</span>');
+      document.getElementById('status').innerHTML = '<span style="color:#28a745">✅ 通知已成功发送！</span>';
+      alert("通知已发送！");
     } else {
-      setStatus('<span style="color:#dc3545">❌ 发送失败：' + (data.msg || '未知错误') + '</span>');
+      document.getElementById('status').innerHTML = '<span style="color:#dc3545">❌ 通知发送失败：' + data.msg + '</span>';
+      alert("通知发送失败：" + data.msg);
     }
   })
   .catch(err => {
     isSending = false;
-    btn.disabled = false;
-    setStatus('<span style="color:#dc3545">❌ 网络错误，请检查网络连接后重试。</span>');
-    console.error(err);
+    document.getElementById('status').innerHTML = '<span style="color:#dc3545">❌ 网络错误，请检查连接</span>';
+    alert("通知发送出错，请检查网络连接。");
   });
 }
 
 function callOwner() {
   if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
-    window.location.href = "tel:" + phone;
+    window.location.href = "tel:" + phone;  // ✅ 已修复 h2ref bug
   } else {
-    setStatus('<span style="color:#17a2b8">📱 请在手机上访问此页面以拨打电话。<br>车主电话：<strong>' + phone + '</strong></span>');
+    alert("请在手机上访问此页面以拨打电话。\n车主电话：" + phone);
   }
 }
 
-// 键盘快捷键
 document.addEventListener('keydown', function(e) {
   if (e.key === '1' || e.key === 'n') notifyOwner();
   else if (e.key === '2' || e.key === 'c') callOwner();
 });
 
-// 初始状态
-setStatus('<span style="color:#28a745">✅ 服务已就绪，请点击按钮通知车主</span>');
+document.getElementById('status').innerHTML = '<span style="color:#17a2b8">✅ 服务已准备就绪</span>';
 </script>
 </body>
 </html>
