@@ -35,7 +35,7 @@
   <button class="call-btn" onclick="callOwner()">拨打车主电话</button>
   <div id="status" class="status-message"></div>
   <div class="footer">
-    <p>挪车通知服务 | 使用 PushPlus 微信公众号推送</p>
+    <p>挪车通知服务 | 使用 PushPlus 微信推送</p>
   </div>
 </div>
 <script>
@@ -46,7 +46,7 @@ let isSending = false;
 function notifyOwner() {
   if (isSending) { alert("正在发送通知，请稍候..."); return; }
   isSending = true;
-  document.getElementById('status').innerHTML = '<span style="color:#17a2b8">⏳ 正在发送通知...</span>';
+  document.getElementById('status').innerHTML = '<span style="color:#28a745">正在发送通知...</span>';
   fetch("https://www.pushplus.plus/send?token=" + pushplusToken + "&title=挪车通知&content=您好，有人需要您挪车，请及时处理。")
   .then(res => res.json())
   .then(data => {
@@ -66,7 +66,7 @@ function notifyOwner() {
 
 function callOwner() {
   if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
-    window.location.href = "tel:" + phone;
+    window.location.href = "tel:" + phone;  // ✅ 已修复 h2ref bug
   } else {
     alert("请在手机上访问此页面以拨打电话。\n车主电话：" + phone);
   }
