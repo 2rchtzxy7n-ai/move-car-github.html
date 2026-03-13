@@ -40,21 +40,28 @@
 </div>
 <script>
 const phone = "19938590219";
-const pushplusToken = "29be78d04bb2441899c3b37df34469e6";
+const sendKey = "SCT91744TVuSjcfeujc92zLExnar00erm";
 let isSending = false;
 
 function notifyOwner() {
   if (isSending) { alert("正在发送通知，请稍候..."); return; }
   isSending = true;
   document.getElementById('status').innerHTML = '<span style="color:#28a745">正在发送通知...</span>';
-  fetch("https://www.pushplus.plus/send?token=" + pushplusToken + "&title=挪车通知&content=您好，有人需要您挪车，请及时处理。")
+  const params = new URLSearchParams();
+  params.append('title', '挪车通知');
+  params.append('desp', '您好，有人需要您挪车，请及时处理。');
+  fetch("https://sctapi.ftqq.com/" + sendKey + ".send", {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: params.toString()
+  })
   .then(res => res.json())
   .then(data => {
     isSending = false;
-    if (data.code === 200) {
+    if (data.code === 0) {
       document.getElementById('status').innerHTML = '<span style="color:#28a745">✅ 通知已成功发送！车主将很快收到微信消息。</span>';
     } else {
-      document.getElementById('status').innerHTML = '<span style="color:#dc3545">❌ 发送失败：' + (data.msg || '未知错误') + '</span>';
+      document.getElementById('status').innerHTML = '<span style="color:#dc3545">❌ 发送失败：' + (data.message || '未知错误') + '</span>';
     }
   })
   .catch(err => {
