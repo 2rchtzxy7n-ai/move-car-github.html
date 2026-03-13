@@ -87,23 +87,14 @@
             2. "拨打车主电话"按钮：直接拨打车主电话<br>
             3. 在手机上使用时电话功能可直接拨打
         </div>
-        
-        <div class="simple">
-            Wxpusher配置：<br>
-            APP Token: AT_8MRwLv9go0kCWwfshfmTerzpne8Rh429<br>
-            UID: UID_z0KZ5oS4jVyDmODm7vhp8iIJfgtU
-        </div>
     </div>
     
     <script>
-        // 配置信息
         const phone = "19938590219";
-        const wxpusherAppToken = "AT_8MRwLv9go0kCWwfshfmTerzpne8Rh429";
-        const wxpusherUIDs = ["UID_z0KZ5oS4jVyDmODm7vhp8iIJfgtU"];
+        const pushplusToken = "29be78d04bb2441899c3b37df34469e6";
         
         let isSending = false;
         
-        // 通知车主功能
         function notifyOwner() {
             if (isSending) {
                 alert("正在发送通知，请稍候...");
@@ -111,28 +102,18 @@
             }
             
             isSending = true;
-            document.getElementById('status').innerHTML = "正在发送通知...";
+            document.getElementById('status').innerHTML = "⏳ 正在发送通知...";
             
-            // 调用Wxpusher API
-            fetch("https://wxpusher.zjiecode.com/api/send/message", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    appToken: wxpusherAppToken,
-                    content: "您好，有人需要您挪车，请及时处理。",
-                    contentType: 1,
-                    uids: wxpusherUIDs
-                })
-            })
+            fetch("https://www.pushplus.plus/send?token=" + pushplusToken + "&title=挪车通知&content=您好，有人需要您挪车，请及时处理。")
             .then(response => response.json())
             .then(data => {
                 isSending = false;
-                if (data.code === 1000) {
+                if (data.code === 200) {
                     document.getElementById('status').innerHTML = "✅ 通知已成功发送！";
                     alert("通知已发送！");
                 } else {
-                    document.getElementById('status').innerHTML = "❌ 通知发送失败：" + data.msg;
-                    alert("通知发送失败：" + data.msg);
+                    document.getElementById('status').innerHTML = "❌ 通知发送失败：" + (data.msg || '未知错误');
+                    alert("通知发送失败：" + (data.msg || '未知错误'));
                 }
             })
             .catch(error => {
@@ -142,27 +123,19 @@
             });
         }
         
-        // 拨打电话功能
         function callOwner() {
             if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
-                // 移动设备
                 window.location.href = "tel:" + phone;
             } else {
-                // 桌面设备
                 alert("请在手机上使用此功能\n车主电话：" + phone);
             }
         }
         
-        // 键盘快捷键
         document.addEventListener('keydown', function(event) {
-            if (event.key === '1') {
-                notifyOwner();
-            } else if (event.key === '2') {
-                callOwner();
-            }
+            if (event.key === '1') notifyOwner();
+            else if (event.key === '2') callOwner();
         });
         
-        // 初始化状态
         setTimeout(() => {
             document.getElementById('status').innerHTML = "✅ 服务已准备就绪";
         }, 500);
