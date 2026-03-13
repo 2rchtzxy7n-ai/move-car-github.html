@@ -83,7 +83,7 @@
         
         <div class="simple">
             使用说明：<br>
-            1. "通知车主挪车"按钮：通过微信推送通知<br>
+            1. "通知车主挪车"按钮：通过Server酱微信推送通知<br>
             2. "拨打车主电话"按钮：直接拨打车主电话<br>
             3. 在手机上使用时电话功能可直接拨打
         </div>
@@ -91,7 +91,7 @@
     
     <script>
         const phone = "19938590219";
-        const pushplusToken = "29be78d04bb2441899c3b37df34469e6";
+        const sendKey = "SCT91744TVuSjcfeujc92zLExnar00erm";
         
         let isSending = false;
         
@@ -104,16 +104,24 @@
             isSending = true;
             document.getElementById('status').innerHTML = "⏳ 正在发送通知...";
             
-            fetch("https://www.pushplus.plus/send?token=" + pushplusToken + "&title=挪车通知&content=您好，有人需要您挪车，请及时处理。")
+            const params = new URLSearchParams();
+            params.append('title', '挪车通知');
+            params.append('desp', '您好，有人需要您挪车，请及时处理。');
+            
+            fetch("https://sctapi.ftqq.com/" + sendKey + ".send", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: params.toString()
+            })
             .then(response => response.json())
             .then(data => {
                 isSending = false;
-                if (data.code === 200) {
+                if (data.code === 0) {
                     document.getElementById('status').innerHTML = "✅ 通知已成功发送！";
                     alert("通知已发送！");
                 } else {
-                    document.getElementById('status').innerHTML = "❌ 通知发送失败：" + (data.msg || '未知错误');
-                    alert("通知发送失败：" + (data.msg || '未知错误'));
+                    document.getElementById('status').innerHTML = "❌ 通知发送失败：" + (data.message || '未知错误');
+                    alert("通知发送失败：" + (data.message || '未知错误'));
                 }
             })
             .catch(error => {
